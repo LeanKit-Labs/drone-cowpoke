@@ -5,6 +5,8 @@ import (
   "io/ioutil"
   "net/http"
   "os"
+
+  "github.com/jaymedavis/drone-cowpoke"
 )
 
 func executePut(url string) {
