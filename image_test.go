@@ -1,20 +1,19 @@
-package image
+package main
 
 import (
   "testing"
 
-	"github.com/franela/goblin"
+  "github.com/franela/goblin"
 )
 
-func TestHook(t *testing.T) {
+func TestHookImage(t *testing.T) {
   g := goblin.Goblin(t)
 
   g.Describe("when reading a docker json file", func() {
     g.It("should return the correct image value", func() {
-      var path = "./test_data/.docker.json"
-      var image = GetImageName(path)
+      var image = GetImageName("./test_data/.docker.json")
 
-      g.Assert(image).Equal("your/image:tag")
+      g.Assert(image).Equal("your/image:tagforthebowwow")
     })
   })
 }

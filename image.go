@@ -1,17 +1,16 @@
-package image
+package main
 
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
-var ImageJson struct {
-    Image string `json:"image"`
+type ImageJson struct {
+	Image string `json:"image"`
 }
 
-func GetImageName(path string) {
+func GetImageName(path string) string {
   file, err := ioutil.ReadFile(path)
 
   if err != nil {
@@ -20,7 +19,6 @@ func GetImageName(path string) {
 
 	var jsonobject ImageJson
 	json.Unmarshal(file, &jsonobject)
-	fmt.Println("got image value", jsonboject.Image)
 
 	return jsonobject.Image
 }
