@@ -11,9 +11,9 @@ type ImageJson struct {
 }
 
 func GetImageName(path string) string {
-  file, err := ioutil.ReadFile(path)
+	file, err := ioutil.ReadFile(path)
 
-  if err != nil {
+	if err != nil {
 		fmt.Println("error opening json file", err)
 	}
 

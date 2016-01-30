@@ -10,19 +10,19 @@ import (
 )
 
 type Cowpoke struct {
-	Url string `json:"cowpoke_url"`
+  Url string `json:"cowpoke_url"`
   DockerJson string `json:"docker_json"`
 }
 
 func main() {
   vargs := Cowpoke{}
-	plugin.Param("vargs", &vargs)
-	plugin.MustParse()
+  plugin.Param("vargs", &vargs)
+  plugin.MustParse()
 
   if len(vargs.Url) == 0 {
     fmt.Println("no cowpoke url was specified")
     os.Exit(1)
-	}
+  }
 
   if len(vargs.DockerJson) == 0 {
     fmt.Println("no docker json path was specified")
