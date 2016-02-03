@@ -39,6 +39,7 @@ func main() {
     os.Exit(1)
   }
 
+  fmt.Println("loading image data from", filepath.Join(workspace.Path, ".docker.json"))
   image := GetImageName(filepath.Join(workspace.Path, ".docker.json"))
 
   var cowpokeUrl = vargs.Url + ":" + vargs.Port + "/"
