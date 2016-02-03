@@ -1,21 +1,31 @@
 package main
 
 import (
+  "encoding/json"
   "fmt"
   "io/ioutil"
   "net/http"
+  "net/url"
   "os"
+  "path/filepath"
 
   "github.com/drone/drone-plugin-go/plugin"
 )
 
-type Cowpoke struct {
+type DroneCowpoke struct {
   Url string `json:"cowpoke_url"`
-  DockerJson string `json:"docker_json"`
+  Port string `json:"cowpoke_port"`
+}
+
+type ImageJson struct {
+	Image string `json:"image"`
 }
 
 func main() {
-  vargs := Cowpoke{}
+  workspace := plugin.Workspace{}
+  vargs := DroneCowpoke{}
+
+  plugin.Param("workspace", &workspace)
   plugin.Param("vargs", &vargs)
   plugin.MustParse()
 
@@ -24,22 +34,22 @@ func main() {
     os.Exit(1)
   }
 
-  if len(vargs.DockerJson) == 0 {
-    fmt.Println("no docker json path was specified")
+  if len(vargs.Port) == 0 {
+    fmt.Println("no cowpoke url was specified")
     os.Exit(1)
   }
 
-  image := GetImageName(vargs.DockerJson)
+  image := GetImageName(filepath.Join(workspace.Path, ".docker.json"))
 
-  // this will need encoding or some other means of parsing to send it correctly
-  ExecutePut(vargs.Url + image);
+  var cowpokeUrl = vargs.Url + ":" + vargs.Port + "/"
+  ExecutePut(cowpokeUrl + url.QueryEscape(image));
 }
 
-func ExecutePut(url string) {
-  fmt.Println("executing a PUT request for:", url)
+func ExecutePut(putUrl string) {
+  fmt.Println("executing a PUT request for:", putUrl)
 
   client := &http.Client{}
-  request, err := http.NewRequest("PUT", url, nil)
+  request, err := http.NewRequest("PUT", putUrl, nil)
 
   response, err := client.Do(request)
   if err != nil {
@@ -55,4 +65,17 @@ func ExecutePut(url string) {
 
     fmt.Println("response status code:", response.StatusCode)
     fmt.Println("content:", string(contents))
+}
+
+func GetImageName(path string) string {
+  file, err := ioutil.ReadFile(path)
+
+  if err != nil {
+		fmt.Println("error opening json file", err)
+	}
+
+	var jsonobject ImageJson
+	json.Unmarshal(file, &jsonobject)
+
+	return jsonobject.Image
 }

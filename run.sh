@@ -1,11 +1,4 @@
-drone-cowpoke
-=============
-
-This drone plugin provides a service to post a docker image name to cowpoke.
-
-## Example
-
-```sh
+#!/bin/bash
 ./drone-cowpoke <<EOF
 {
 	"workspace": {
@@ -17,4 +10,3 @@ This drone plugin provides a service to post a docker image name to cowpoke.
 	}
 }
 EOF
-```
