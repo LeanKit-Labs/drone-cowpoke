@@ -8,17 +8,16 @@ import (
   "net/url"
   "os"
   "path/filepath"
-
   "github.com/drone/drone-plugin-go/plugin"
 )
 
 type Cowpoke struct {
   Url string `json:"cowpoke_url"`
-  Port string `json:"cowpoke_port"`
+  Port int `json:"cowpoke_port"`
 }
 
 type ImageJson struct {
-	Image string `json:"image"`
+  Image string `json:"image"`
 }
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
     os.Exit(1)
   }
 
-  if len(vargs.Port) == 0 {
+  if vargs.Port == 0 {
     fmt.Println("no cowpoke url was specified")
     os.Exit(1)
   }
@@ -42,7 +41,8 @@ func main() {
   fmt.Println("loading image data from", filepath.Join(workspace.Path, ".docker.json"))
   image := GetImageName(filepath.Join(workspace.Path, ".docker.json"))
 
-  var cowpokeUrl = vargs.Url + ":" + vargs.Port + "/"
+  var cowpokeUrl = fmt.Sprintf("%s:%d/api/environment/", vargs.Url, vargs.Port)
+  fmt.Println("cowpoke url set to %s", cowpokeUrl)
   ExecutePut(cowpokeUrl + url.QueryEscape(image));
 }
 
@@ -72,11 +72,11 @@ func GetImageName(path string) string {
   file, err := ioutil.ReadFile(path)
 
   if err != nil {
-		fmt.Println("error opening json file", err)
-	}
+    fmt.Println("error opening json file", err)
+  }
 
-	var jsonobject ImageJson
-	json.Unmarshal(file, &jsonobject)
+  var jsonobject ImageJson
+  json.Unmarshal(file, &jsonobject)
 
-	return jsonobject.Image
+  return jsonobject.Image
 }

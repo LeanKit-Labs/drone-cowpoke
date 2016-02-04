@@ -6,7 +6,7 @@
 	},
 	"vargs": {
 		"cowpoke_url": "http://cowpoke",
-		"cowpoke_port": "8080"
+		"cowpoke_port": 8080
 	}
 }
 EOF
