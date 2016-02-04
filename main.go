@@ -12,7 +12,7 @@ import (
   "github.com/drone/drone-plugin-go/plugin"
 )
 
-type DroneCowpoke struct {
+type Cowpoke struct {
   Url string `json:"cowpoke_url"`
   Port string `json:"cowpoke_port"`
 }
@@ -23,7 +23,7 @@ type ImageJson struct {
 
 func main() {
   workspace := plugin.Workspace{}
-  vargs := DroneCowpoke{}
+  vargs := Cowpoke{}
 
   plugin.Param("workspace", &workspace)
   plugin.Param("vargs", &vargs)
