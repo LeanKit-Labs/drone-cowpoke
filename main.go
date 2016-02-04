@@ -21,6 +21,8 @@ type ImageJson struct {
 }
 
 func main() {
+  fmt.Println("starting drone-cowpoke...")
+
   workspace := plugin.Workspace{}
   vargs := Cowpoke{}
 
@@ -34,16 +36,24 @@ func main() {
   }
 
   if vargs.Port == 0 {
-    fmt.Println("no cowpoke url was specified")
+    fmt.Println("no cowpoke port was specified")
     os.Exit(1)
   }
 
   fmt.Println("loading image data from", filepath.Join(workspace.Path, ".docker.json"))
   image := GetImageName(filepath.Join(workspace.Path, ".docker.json"))
 
+  if(len(image) <= 0) {
+    fmt.Println("image load failed from .docker.json")
+    os.Exit(1)
+  }
+
   var cowpokeUrl = fmt.Sprintf("%s:%d/api/environment/", vargs.Url, vargs.Port)
-  fmt.Println("cowpoke url set to %s", cowpokeUrl)
+  fmt.Println("cowpoke url set to:", cowpokeUrl)
+  fmt.Println(".docker.json value being posted:", image)
   ExecutePut(cowpokeUrl + url.QueryEscape(image));
+
+  fmt.Println("finished drone-cowpoke.")
 }
 
 func ExecutePut(putUrl string) {
