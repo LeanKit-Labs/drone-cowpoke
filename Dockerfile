@@ -1,5 +1,3 @@
-FROM rancher/docker:1.9.1
-
-ADD drone-cowpoke /go/bin/
-VOLUME /var/lib/docker
-ENTRYPOINT ["/usr/bin/dockerlaunch", "/go/bin/drone-cowpoke"]
+FROM alpine:3.3
+ADD drone-cowpoke /usr/local/bin/
+ENTRYPOINT [ "/usr/local/bin/drone-cowpoke" ]
