@@ -7,6 +7,7 @@ build:
     - CGO_ENABLED=0
   commands:
     - go get
+    - go get -u github.com/franela/goblin
     - go build
     - go test
 
@@ -25,6 +26,6 @@ plugin:
   type: publish
   image: leankit/drone-cowpoke
   labels:
-    - docker
+    - cowpoke
+    - rancher
     - image
-    - container
