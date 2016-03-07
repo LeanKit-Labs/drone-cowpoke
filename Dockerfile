@@ -1,3 +1,6 @@
-FROM alpine:3.3
+FROM alpine
+RUN apk update && apk add bash ca-certificates
+# ADD . /app
+# WORKDIR /app
 ADD drone-cowpoke /usr/local/bin/
 ENTRYPOINT [ "/usr/local/bin/drone-cowpoke" ]
