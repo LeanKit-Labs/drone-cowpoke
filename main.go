@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/drone/drone-plugin-go/plugin"
 	"gopkg.in/yaml.v2"
+	"strings"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,6 +21,63 @@ type Cowpoke struct {
 
 type TagsYaml struct {
 	Tags []string `yaml:"tags"`
+}
+
+func CheckImage( image string) bool {
+	imageParts := strings.Split(image, ":");
+
+	//if there is a tag
+	if (len(imageParts) != 2) {
+		return false;
+	}
+
+	tag := imageParts[1]; //get it
+	//get the parts expecting OWNER_REPO_BRANCH_VERSION_BUILD_COMMIT
+	//as the branch could have underscores it needs to be parsed last.
+	index := strings.Index(tag, "_");
+	if index == -1 {
+		return false;
+	}
+
+	owner := tag[:index];
+	remainingTag := tag[index + 1:]
+
+	index = strings.Index(remainingTag, "_")
+
+	if index == -1 {
+	  return false;
+	}
+    repo := remainingTag[:index]
+    remainingTag = remainingTag[index + 1:]
+
+    //get the end part of the tag
+    index = strings.LastIndex(remainingTag, "_" )
+    if index == -1 {
+      return false;
+    }
+    commit := remainingTag[index + 1:]
+    remainingTag = remainingTag[:index]
+    
+    index = strings.LastIndex(remainingTag, "_" )
+    if index == -1 {
+      return false;
+    }
+    build := remainingTag[index + 1:]
+    remainingTag = remainingTag[:index]
+    
+    index = strings.LastIndex(remainingTag, "_" )
+    if index == -1 {
+      return false;
+    }
+    version := remainingTag[index:]
+
+    branch := remainingTag[:index]
+
+	if (owner == "") || (repo == "") || (branch == "") || (version == "") || (build == "") || (commit =="")  {
+		return false;
+	}
+
+	return true
 }
 
 func main() {
@@ -68,9 +126,13 @@ func main() {
 	}
 	for _, tag := range tags {
 		image = fmt.Sprintf("%s/%s:%s", owner, repo, tag)
-
-		fmt.Println("Poking environments with image:", image)
-		ExecutePut(cowpokeUrl + url.QueryEscape(image))
+		if CheckImage(image) {
+			fmt.Println("Poking environments with image:", image)
+			ExecutePut(cowpokeUrl + url.QueryEscape(image))
+		} else {
+			fmt.Println("Tag not formated like dev and no services will be upgraded with image: ", image)
+		}
+		
 	}
 	fmt.Println("finished drone-cowpoke.")
 }
