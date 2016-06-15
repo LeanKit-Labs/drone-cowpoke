@@ -8,7 +8,6 @@ build:
   commands:
     - go get
     - go get -u github.com/franela/goblin
-    - go get -u github.com/jarcoal/httpmock
     - go build
     - go test
 
