@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 	"path/filepath"
 )
 
@@ -140,7 +141,9 @@ func main() {
 func ExecutePut(putUrl string) {
 	fmt.Println("executing a PUT request for:", putUrl)
 
-	client := &http.Client{}
+	client := &http.Client{
+	    Timeout: time.Second * 60,
+	}
 	request, err := http.NewRequest("PUT", putUrl, nil)
 	request.Close = true
 
