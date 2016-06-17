@@ -2,3 +2,4 @@ drone-cowpoke
 .vscode
 docker/.
 drone-cowpoke
+npm-debug.log
