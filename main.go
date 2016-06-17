@@ -150,7 +150,7 @@ func ExecutePut(putUrl string) {
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("error executing request:", response, err)
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	defer response.Body.Close()
