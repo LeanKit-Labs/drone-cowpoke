@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"bytes"
 	"os"
 	"time"
 	"path/filepath"
@@ -132,10 +131,9 @@ func main() {
 		if CheckImage(image) {
 			fmt.Println("Poking environments with image:", image)
 			if (cowpoke.CatalogUpgrade == true) {
-				jsonStr := fmt.Sprintf("{\"rancher_catalog\": \"%s\", \"docker_image\" : \"%s\"}", cowpoke.Catalog, image);
-				ExecutePut(cowpokeUrl + "catalog", jsonStr)
+				ExecutePut(cowpokeUrl + "catalog", true, cowpoke.Catalog, image)
 			} else {
-				ExecutePut(cowpokeUrl + url.QueryEscape(image), "{}")
+				ExecutePut(cowpokeUrl + url.QueryEscape(image), false, "","")
 			}
 		} else {
 			fmt.Println("Tag not formated like dev and no services will be upgraded with image: ", image)
@@ -145,15 +143,22 @@ func main() {
 	fmt.Println("finished drone-cowpoke.")
 }
 
-func ExecutePut(putUrl string, jsonStr string) {
-	fmt.Println("executing a PUT request for:", putUrl)
+func ExecutePut(putUrl string, addArgs bool, rancher_catalog string, docker_image string) {
+	
 
 	client := &http.Client{
 	    Timeout: time.Second * 60,
 	}
-	request, err := http.NewRequest("PUT", putUrl, bytes.NewBuffer([]byte(jsonStr)))
+	request, err := http.NewRequest("PUT", putUrl, nil);
+	if (addArgs) {
+		values := request.URL.Query()
+		values.Add("rancher_catalog", rancher_catalog)
+		values.Add("docker_image", docker_image)
+		request.URL.RawQuery = values.Encode();
+	}
 	request.Close = true
-	request.Header.Set("Content-Type", "application/json")
+	fmt.Println("executing a PUT request for:", request.URL);
+	
 
 	response, err := client.Do(request)
 	if err != nil {
@@ -171,7 +176,6 @@ func ExecutePut(putUrl string, jsonStr string) {
 	fmt.Println("content:", string(contents))
 }
 
->>>>>>> Added code to do catalog update
 func GetTags(path string) []string {
 	file, err := ioutil.ReadFile(path)
 
