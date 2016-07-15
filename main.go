@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"bytes"
 	"os"
 	"time"
 	"path/filepath"
@@ -18,6 +19,8 @@ type Cowpoke struct {
 	Port        int    `json:"cowpoke_port"`
 	DockerOwner string `json:"docker_owner"`
 	DockerRepo  string `json:"docker_repo"`
+	CatalogUpgrade  bool `json:"cowpoke_catalog_upgrade"`
+	Catalog  string `json:"cowpoke_catalog"`
 }
 
 type TagsYaml struct {
@@ -71,7 +74,6 @@ func CheckImage( image string) bool {
       return false;
     }
     version := remainingTag[index:]
-
     branch := remainingTag[:index]
 
 	if (owner == "") || (repo == "") || (branch == "") || (version == "") || (build == "") || (commit =="")  {
@@ -125,11 +127,16 @@ func main() {
 	if len(tags) == 0 {
 		fmt.Println("No tags found. Nothing to poke.")
 	}
-	for _, tag := range tags {
+	for _ , tag := range tags {
 		image = fmt.Sprintf("%s/%s:%s", owner, repo, tag)
 		if CheckImage(image) {
 			fmt.Println("Poking environments with image:", image)
-			ExecutePut(cowpokeUrl + url.QueryEscape(image))
+			if (cowpoke.CatalogUpgrade == true) {
+				jsonStr := fmt.Sprintf("{\"rancher_catalog\": \"%s\", \"docker_image\" : \"%s\"}", cowpoke.Catalog, image);
+				ExecutePut(cowpokeUrl + "catalog", jsonStr)
+			} else {
+				ExecutePut(cowpokeUrl + url.QueryEscape(image), "{}")
+			}
 		} else {
 			fmt.Println("Tag not formated like dev and no services will be upgraded with image: ", image)
 		}
@@ -138,14 +145,15 @@ func main() {
 	fmt.Println("finished drone-cowpoke.")
 }
 
-func ExecutePut(putUrl string) {
+func ExecutePut(putUrl string, jsonStr string) {
 	fmt.Println("executing a PUT request for:", putUrl)
 
 	client := &http.Client{
 	    Timeout: time.Second * 60,
 	}
-	request, err := http.NewRequest("PUT", putUrl, nil)
+	request, err := http.NewRequest("PUT", putUrl, bytes.NewBuffer([]byte(jsonStr)))
 	request.Close = true
+	request.Header.Set("Content-Type", "application/json")
 
 	response, err := client.Do(request)
 	if err != nil {
@@ -163,6 +171,7 @@ func ExecutePut(putUrl string) {
 	fmt.Println("content:", string(contents))
 }
 
+>>>>>>> Added code to do catalog update
 func GetTags(path string) []string {
 	file, err := ioutil.ReadFile(path)
 
