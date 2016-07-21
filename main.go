@@ -131,9 +131,9 @@ func main() {
 		if CheckImage(image) {
 			fmt.Println("Poking environments with image:", image)
 			if (cowpoke.CatalogUpgrade == true) {
-				ExecutePut(cowpokeUrl + "catalog", true, cowpoke.Catalog, image)
+				ExecuteRequest("POST", cowpokeUrl + "catalog", true, cowpoke.Catalog, image)
 			} else {
-				ExecutePut(cowpokeUrl + url.QueryEscape(image), false, "","")
+				ExecuteRequest("PUT", cowpokeUrl + url.QueryEscape(image), false, "","")
 			}
 		} else {
 			fmt.Println("Tag not formated like dev and no services will be upgraded with image: ", image)
@@ -143,13 +143,13 @@ func main() {
 	fmt.Println("finished drone-cowpoke.")
 }
 
-func ExecutePut(putUrl string, addArgs bool, rancher_catalog string, docker_image string) {
+func ExecuteRequest(method string, putUrl string, addArgs bool, rancher_catalog string, docker_image string) {
 	
 
 	client := &http.Client{
 	    Timeout: time.Second * 60,
 	}
-	request, err := http.NewRequest("PUT", putUrl, nil);
+	request, err := http.NewRequest(method, putUrl, nil);
 	if (addArgs) {
 		values := request.URL.Query()
 		values.Add("rancher_catalog", rancher_catalog)
