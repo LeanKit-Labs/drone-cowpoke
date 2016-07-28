@@ -1,6 +1,6 @@
 #!/bin/bash
 #drone-cowpoke <<EOF
-docker run --dns 10.0.1.200 -i --rm -v /Users/evans/Desktop/drone-cowpoke/docker:/app/docker leankit/drone-cowpoke <<EOF
+docker run --dns 10.0.1.200 -i --rm -v ${HOME}/gopath/src/github.com/LeanKit-Labs/drone-cowpoke/docker:/app/docker leankit/drone-cowpoke <<EOF
 {
 	"workspace": {
 		"path": "/app/docker/src"
