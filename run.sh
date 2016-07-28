@@ -10,9 +10,11 @@ docker run --dns 10.0.1.200 -i --rm -v ${HOME}/gopath/src/github.com/LeanKit-Lab
 		"owner": "BanditSoftware"
 	},
 	"vargs": {
-		"cowpoke_url": "https://cowpoke.leankit.io",
-		"cowpoke_port": 8000,
-		"docker_owner": "leankit"
+		"cowpoke_url": "http://cowpoke.leankit.io",
+		"cowpoke_port": 9000,
+		"docker_owner": "leankit", 
+		"cowpoke_catalog_upgrade": true,
+		"cowpoke_catalog" : "rancher-core-leankit-api"
 	}
 }
 EOF

@@ -23,17 +23,16 @@ func TestHookImage(t *testing.T) {
 		g.It("should not call regognize a production tag with version", func() {
 			valid := CheckImage("foo:v3.0.0")
 			g.Assert(valid).Equal(false)
-		
-		
+
 		})
-		g.It("should not regognize a production tag with latest", func(){
+		g.It("should not regognize a production tag with latest", func() {
 			valid := CheckImage("foo:latest")
 			g.Assert(valid).Equal(false)
 		})
-		
+
 		g.It("should not regognize no tag", func() {
 			valid := CheckImage("foo")
 			g.Assert(valid).Equal(false)
 		})
-  })
+	})
 }
