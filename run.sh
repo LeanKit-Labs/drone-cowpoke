@@ -15,14 +15,14 @@
 			"owner": "leankit-labs"
 		},
 		"vargs": {
-			"docker_username": "$DOCKER_USER",
-			"docker_password": "$DOCKER_PASS",
+			"docker_username": "mydockerhubname",
+			"docker_password": "mysecretpassword",
 			"docker_repo": "leankit/cowpoke-integration-test",
 			"catalog_repo": "BanditSoftware/rancher-cowpoke-integration-test",
-			"github_token": "$GITHUB_TOKEN",
-			"github_user": "$GITHUB_NAME",
-			"github_email": "$GITHUB_EMAIL",
-			"cowpoke_url": "http://cowpoke.leankit.io:9000",
+			"github_token": "mySecretToken",
+			"github_user": "myGithubName",
+			"github_email": "me@eample.com",
+			"cowpoke_url": "https://cowpoke.yourdomain.com",
 			"rancher_catalog_name": "cowpoke-integration-test"
 		}
 	}

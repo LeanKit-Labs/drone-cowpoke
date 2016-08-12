@@ -46,33 +46,52 @@ publish:
 
 deploy:
   cowpoke:
-      image: leankit/drone-cowpoke
+      image: leankit/drone-cowpoke:catalog
       environment:
         - DOCKER_LAUNCH_DEBUG=true
-      cowpoke_url: https://cowpoke.yourdomain.com
-      cowpoke_port: 443
-      drone_owner: yourDockerRepo # optional: use if your docker owner doesn't match github
-      drone_repo: yourProjectName # optional: use if your docker repo doesn't match github
+      docker_username: mydockerhubname,
+      docker_password: mysecretpassword,
+      docker_repo: leankit/cowpoke-integration-test,
+      catalog_repo: BanditSoftware/rancher-cowpoke-integration-test,
+      github_token: mySecretToken,
+      github_user: myGithubName,
+      github_email: me@eample.com,
+      cowpoke_url: https://cowpoke.yourdomain.com,
+      rancher_catalog_name": cowpoke-integration-test
 ```
 
 ## Testing via script
 
 ```sh
 ./drone-cowpoke <<EOF
-{
-	"workspace": {
-		"path": "/app/docker/src"
-	},
-	"repo": {
-		"name": "my-repo",
-		"owner": "LeanKit-Labs"
-	},
-	"vargs": {
-		"cowpoke_url": "https://cowpoke",
-		"cowpoke_port": 8000,
-		"docker_owner": "leankit"
+docker run -i --rm \
+	-v ${GOPATH}/src/github.com/LeanKit-Labs/drone-cowpoke/docker:/app/docker \
+	-v ${GOPATH}/src/github.com/LeanKit-Labs/drone-rancher-catalog/.test-data/rancher-catalog:/rancher-catalog \
+	leankit/drone-cowpoke<<EOF
+	{
+		"build": {
+			"Number": 56
+		},
+		"workspace": {
+			"path": "/app"
+		},
+		"repo": {
+			"name": "cowpoke-integration-test",
+			"owner": "leankit-labs"
+		},
+		"vargs": {
+			"docker_username": "mydockerhubname",
+			"docker_password": "mysecretpassword",
+			"docker_repo": "leankit/cowpoke-integration-test",
+			"catalog_repo": "BanditSoftware/rancher-cowpoke-integration-test",
+			"github_token": "mySecretToken",
+			"github_user": "myGithubName",
+			"github_email": "me@eample.com",
+			"cowpoke_url": "https://cowpoke.yourdomain.com",
+			"rancher_catalog_name": "cowpoke-integration-test"
+		}
 	}
-}
+	EOF
 EOF
 ```
 
