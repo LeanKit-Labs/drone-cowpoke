@@ -1,39 +1,36 @@
 //tests will be reworked after this proof of concept plugin
 package main
 
-//import "testing"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"testing"
 
-/*func TestHookImage(t *testing.T) {
+	"github.com/franela/goblin"
+)
 
+func TestHookImage(t *testing.T) {
 
 	g := goblin.Goblin(t)
 
-		g.Describe("when reading a docker json file", func() {
-			g.It("should return the correct image value", func() {
-				var tags = GetTags("./test_data/.droneTags.yml")
+	g.Describe("Make a request object for a request to cowpoke", func() {
+		g.It("should return the correct request", func() {
+			catalogNo := 1
+			branchName := "test"
+			CatalogRepo := "repo"
+			rancherCatalogName := "catalog"
+			token := "secret"
+			CowpokeURL := "cowpoke.mydomain.io"
+			var args map[string]interface{}
+			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL)
+			body, _ := ioutil.ReadAll(req.Body)
+			json.Unmarshal(body, &args)
+			g.Assert(args["catalog"].(string) == CatalogRepo)
+			g.Assert(args["rancherCatalogName"].(string) == rancherCatalogName)
+			g.Assert(args["githubToken"].(string) == token)
+			g.Assert(args["catalogVersion"].(string) == string(catalogNo))
+			g.Assert(args["branch"].(string) == branchName)
 
-				g.Assert(tags).Equal([]string{"tagforthebowwow"})
-			})
 		})
-		g.Describe("when checking tag", func() {
-			g.It("should regognize a dev tag", func() {
-				valid := CheckImage("leankit/core-leankit-api:BanditSoftware_core-leankit-api_feature-exit-when-no-redis_4.7.1_11_6563de12")
-				g.Assert(valid).Equal(true)
-			})
-			g.It("should not call regognize a production tag with version", func() {
-				valid := CheckImage("foo:v3.0.0")
-				g.Assert(valid).Equal(false)
-
-
-			})
-			g.It("should not regognize a production tag with latest", func(){
-				valid := CheckImage("foo:latest")
-				g.Assert(valid).Equal(false)
-			})
-
-			g.It("should not regognize no tag", func() {
-				valid := CheckImage("foo")
-				g.Assert(valid).Equal(false)
-			})
-	  })
-}*/
+	})
+}

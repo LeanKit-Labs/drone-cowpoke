@@ -263,7 +263,7 @@ func main() {
 
 //calls cowpoke after catalog is built
 func cowpokeRequest(catalogNo int, branchName string, CatalogRepo string, rancherCatalogName string, token string, CowpokeURL string) *http.Request {
-	var jsonStr = []byte(fmt.Sprintf(`{"catalog":"%s","rancherCatalogName":"%s","githubToken":"%s","catalogVersion":"%s","branch":"%s"}"`, CatalogRepo, rancherCatalogName, token, strconv.Itoa(catalogNo), branchName))
+	var jsonStr = []byte(fmt.Sprintf(`{"catalog":"%s","rancherCatalogName":"%s","githubToken":"%s","catalogVersion":"%s","branch":"%s"}`, CatalogRepo, rancherCatalogName, token, strconv.Itoa(catalogNo), branchName))
 	request, err := http.NewRequest("PATCH", CowpokeURL+"/api/stack", bytes.NewBuffer(jsonStr))
 	request.Header.Set("Content-Type", "application/json")
 	if err != nil {
