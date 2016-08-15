@@ -15,6 +15,33 @@ func TestHookImage(t *testing.T) {
 
 	g := goblin.Goblin(t)
 
+	g.Describe("file exists", func() {
+		g.It("should find file", func() {
+			g.Assert(exists("./main.go"))
+		})
+		g.It("should not find file", func() {
+			g.Assert(exists("./DNE.go"))
+		})
+	})
+
+	g.Describe("file exists", func() {
+		g.It("should find file", func() {
+			g.Assert(exists("./main.go"))
+		})
+		g.It("should not find file", func() {
+			g.Assert(!exists("./DNE.go"))
+		})
+	})
+
+	g.Describe("string in slice", func() {
+		g.It("should find string", func() {
+			g.Assert(stringInSlice("findme", []string{"findme"}))
+		})
+		g.It("should not find string", func() {
+			g.Assert(!stringInSlice("findme", []string{"nope"}))
+		})
+	})
+
 	g.Describe("Make a request object for a request to cowpoke", func() {
 		g.It("should return the correct request", func() {
 			catalogNo := 1
@@ -67,15 +94,6 @@ func TestHookImage(t *testing.T) {
 			g.Assert(tagInfo.Build == 1)
 			g.Assert(tagInfo.Version == "5.13.0")
 			g.Assert(tagInfo.Branch == "master")
-		})
-	})
-
-	g.Describe("file exists", func() {
-		g.It("should find file", func() {
-			g.Assert(exists("./main.go"))
-		})
-		g.It("should not find file", func() {
-			g.Assert(exists("./DNE.go"))
 		})
 	})
 
