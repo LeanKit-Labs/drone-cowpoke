@@ -162,7 +162,7 @@ func main() {
 	configTmpl := catalog.parseTemplateFile(configTemplateFile)
 	upgradeTags := getTagsFromYaml(catalog.workspace)
 	tags := catalog.getTags()
-	tbb := catalog.tagsByBranch(tags)
+	tbb := catalog.TagsByBranch(tags)
 
 	var cowpokeRequests []*http.Request
 
@@ -327,7 +327,7 @@ func (c *catalog) parseTag(t string) *Tag {
 }
 
 // tagsByBranch break down tag list and return a tagsByBranch object
-func (c *catalog) tagsByBranch(tags []string) *tagsByBranch {
+func (c *catalog) TagsByBranch(tags []string) *tagsByBranch {
 	tbb := &tagsByBranch{}
 	tbb.branches = make(map[string]branch)
 	for _, tg := range tags {
