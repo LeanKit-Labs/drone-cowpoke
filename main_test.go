@@ -17,28 +17,19 @@ func TestHookImage(t *testing.T) {
 
 	g.Describe("file exists", func() {
 		g.It("should find file", func() {
-			g.Assert(exists("./main.go"))
+			g.Assert(exists("./main.go")).Equal(true)
 		})
 		g.It("should not find file", func() {
-			g.Assert(exists("./DNE.go"))
-		})
-	})
-
-	g.Describe("file exists", func() {
-		g.It("should find file", func() {
-			g.Assert(exists("./main.go"))
-		})
-		g.It("should not find file", func() {
-			g.Assert(!exists("./DNE.go"))
+			g.Assert(exists("./DNE.go")).Equal(false)
 		})
 	})
 
 	g.Describe("string in slice", func() {
 		g.It("should find string", func() {
-			g.Assert(stringInSlice("findme", []string{"findme"}))
+			g.Assert(stringInSlice("findme", []string{"findme"})).Equal(true)
 		})
 		g.It("should not find string", func() {
-			g.Assert(!stringInSlice("findme", []string{"nope"}))
+			g.Assert(stringInSlice("findme", []string{"nope"})).Equal(false)
 		})
 	})
 
@@ -54,11 +45,11 @@ func TestHookImage(t *testing.T) {
 			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL)
 			body, _ := ioutil.ReadAll(req.Body)
 			json.Unmarshal(body, &args)
-			g.Assert(args["catalog"].(string) == CatalogRepo)
-			g.Assert(args["rancherCatalogName"].(string) == rancherCatalogName)
-			g.Assert(args["githubToken"].(string) == token)
-			g.Assert(args["catalogVersion"].(string) == string(catalogNo))
-			g.Assert(args["branch"].(string) == branchName)
+			g.Assert(args["catalog"].(string)).Equal(CatalogRepo)
+			g.Assert(args["rancherCatalogName"].(string)).Equal(rancherCatalogName)
+			g.Assert(args["githubToken"].(string)).Equal(token)
+			g.Assert(args["catalogVersion"].(string)).Equal("1")
+			g.Assert(args["branch"].(string)).Equal(branchName)
 
 		})
 	})
@@ -71,13 +62,13 @@ func TestHookImage(t *testing.T) {
 			catalog.repo.Name = "cowpoke-integration-test"
 			tag := "Leankit-Labs_cowpoke-integration-test_master_0.0.1_28_452c8fe7"
 			tagInfo := catalog.parseTag(tag)
-			g.Assert(tagInfo.Tag == tag)
-			g.Assert(tagInfo.Owner == "Leankit-Labs")
-			g.Assert(tagInfo.Project == "cowpoke-integration-test")
-			g.Assert(tagInfo.SHA == "452c8fe7")
-			g.Assert(tagInfo.Build == 28)
-			g.Assert(tagInfo.Version == "0.0.1")
-			g.Assert(tagInfo.Branch == "master")
+			g.Assert(tagInfo.Tag).Equal(tag)
+			g.Assert(tagInfo.Owner).Equal("Leankit-Labs")
+			g.Assert(tagInfo.Project).Equal("cowpoke-integration-test")
+			g.Assert(tagInfo.SHA).Equal("452c8fe7")
+			g.Assert(tagInfo.Build).Equal(28)
+			g.Assert(tagInfo.Version).Equal("0.0.1")
+			g.Assert(tagInfo.Branch).Equal("master")
 		})
 
 		g.It("should get the parts on a prod tag", func() {
@@ -87,13 +78,13 @@ func TestHookImage(t *testing.T) {
 			catalog.repo.Name = "cowpoke-integration-test"
 			tag := "v5.13.0"
 			tagInfo := catalog.parseTag(tag)
-			g.Assert(tagInfo.Tag == tag)
-			g.Assert(tagInfo.Owner == "Leankit-Labs")
-			g.Assert(tagInfo.Project == "cowpoke-integration-test")
-			g.Assert(tagInfo.SHA == "")
-			g.Assert(tagInfo.Build == 1)
-			g.Assert(tagInfo.Version == "5.13.0")
-			g.Assert(tagInfo.Branch == "master")
+			g.Assert(tagInfo.Tag).Equal(tag)
+			g.Assert(tagInfo.Owner).Equal("Leankit-Labs")
+			g.Assert(tagInfo.Project).Equal("cowpoke-integration-test")
+			g.Assert(tagInfo.SHA).Equal("")
+			g.Assert(tagInfo.Build).Equal(1)
+			g.Assert(tagInfo.Version).Equal("5.13.0")
+			g.Assert(tagInfo.Branch).Equal("master")
 		})
 	})
 
@@ -120,10 +111,10 @@ func TestHookImage(t *testing.T) {
 			for k := range tbb.branches {
 				branchKeys = append(branchKeys, k)
 			}
-			g.Assert(stringInSlice("master", branchKeys))
-			g.Assert(stringInSlice("under_score", branchKeys))
-			g.Assert(stringInSlice("lots_of_under_scores", branchKeys))
-			g.Assert(len(branchKeys) == 3)
+			g.Assert(stringInSlice("master", branchKeys)).Equal(true)
+			g.Assert(stringInSlice("under_score", branchKeys)).Equal(true)
+			g.Assert(stringInSlice("lots_of_under_scores", branchKeys)).Equal(true)
+			g.Assert(len(branchKeys)).Equal(3)
 
 		})
 		g.It("should have all versions", func() {
@@ -131,18 +122,18 @@ func TestHookImage(t *testing.T) {
 			for k := range tbb.branches["lots_of_under_scores"].versions {
 				versionKeys = append(versionKeys, k)
 			}
-			g.Assert(stringInSlice("0.1.1", versionKeys))
-			g.Assert(stringInSlice("0.1.2", versionKeys))
-			g.Assert(len(versionKeys) == 2)
+			g.Assert(stringInSlice("0.1.1", versionKeys)).Equal(true)
+			g.Assert(stringInSlice("0.1.2", versionKeys)).Equal(true)
+			g.Assert(len(versionKeys)).Equal(2)
 		})
 		g.It("should have all builds", func() {
 			buildKeys := []string{}
 			for k := range tbb.branches["under_score"].versions["0.1.0"].builds {
 				buildKeys = append(buildKeys, strconv.Itoa(k))
 			}
-			g.Assert(stringInSlice("33", buildKeys))
-			g.Assert(stringInSlice("34", buildKeys))
-			g.Assert(len(buildKeys) == 2)
+			g.Assert(stringInSlice("33", buildKeys)).Equal(true)
+			g.Assert(stringInSlice("34", buildKeys)).Equal(true)
+			g.Assert(len(buildKeys)).Equal(2)
 		})
 	})
 }
