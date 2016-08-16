@@ -3,3 +3,4 @@ drone-cowpoke
 docker/.
 drone-cowpoke
 npm-debug.log
+vendor/
