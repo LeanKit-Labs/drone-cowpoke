@@ -46,7 +46,7 @@ publish:
 
 deploy:
   cowpoke:
-      image: leankit/drone-cowpoke:catalog
+      image: leankit/drone-cowpoke:feature-catalog-update
       environment:
         - DOCKER_LAUNCH_DEBUG=true
       docker_username: mydockerhubname,
