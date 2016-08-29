@@ -86,7 +86,7 @@ type Tag struct {
 }
 
 func getTagsFromYaml(workspace plugin.Workspace) []string {
-	path := filepath.Join(workspace.Path, "docker/src/.droneTags.yml")
+	path := filepath.Join(workspace.Path, ".droneTags.yml")
 	file, err := ioutil.ReadFile(path)
 
 	if err != nil {
@@ -222,7 +222,8 @@ func main() {
 				count++
 			}
 			if stringInSlice(last.Tag, upgradeTags) {
-				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
+				//count was already incremented so it needs to be decremented when added request
+				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
 			}
 
 		}

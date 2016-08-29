@@ -50,7 +50,6 @@ func TestHookImage(t *testing.T) {
 			g.Assert(args["githubToken"].(string)).Equal(token)
 			g.Assert(args["catalogVersion"].(string)).Equal("1")
 			g.Assert(args["branch"].(string)).Equal(branchName)
-
 		})
 	})
 
