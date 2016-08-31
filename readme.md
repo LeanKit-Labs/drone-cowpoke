@@ -1,7 +1,46 @@
 drone-cowpoke
 =============
 
-This drone plugin provides a service to post a docker image name to Rancher via  [cowpoke](https://github.com/leankit-labs/cowpoke).
+This drone plugin provides a service to post a docker image name to Rancher via  [cowpoke](https://github.com/leankit-labs/cowpoke). It also builds a rancher catalog for the service in order to provide cowpoke with an up to date catalog.
+
+This plugin will read all of the tags in the specified Docker Hub Repo and create the catalog entries entries based on 2 styles of tags.
+
+* **Release Tags:** `v1.0.1`  
+* **Feature Branch Tags:** `jgreat_core-api_feature-branch_1.0.3_3_aaaa1234`
+
+#### Feature Branch Tags Format
+`<GithubOwner>_<GithubProject>_<BranchName>_<Version>_<Build>_<SHA>`  
+We use [buildgoggles](https://www.npmjs.com/package/buildgoggles) to generate these tags for our nodejs projects and a customized version of [drone-docker](https://hub.docker.com/r/leankit/drone-docker/) to publish programmatic tags to https://hub.docker.com.
+
+#### Catalog Format
+This creates a catalog for a single github project. Creates a Entry for each branch with a version of each entry for every build ordered by version/build in each Docker Hub tag.
+
+```bash
+base/                        # Go Templates (Create/Edit These)
+  |_ catalogIcon.(png|svg)   # Copy for branch/catalogIcon.(png|svg)
+  |_ config.tmpl             # Template for branch/config.yml
+  |_ rancher-compose.tmpl    # Template for branch/0/rancher-compose.yml
+  |_ docker-compose.tmpl     # Template for branch/0/docker-compose.yml
+
+templates/                   # Generated Catalog (don't manually edit)
+  |_ master/                 # based on branch name (master for Release Tag)
+    |_ config.yml            # Catalog Entry config
+    |_ catalogIcon.png       # icon image
+    |_ 0/                    # builds for a branch
+      |_ docker-compose.yml  # Entry/Build docker-compose.yml
+      |_ rancher-compose.yml # Entry/Build rancher-compose.yml
+    |_ 1/
+      |_ docker-compose.yml
+      |_ rancher-compose.yml
+  |_ feature-branch/
+    |_ config.yml
+    |_ catalogIcon.png
+    |_ 0/
+      |_ docker-compose.yml
+      |_ rancher-compose.yml
+  ...
+```
+
 
 ## Prerequisites
  * Use [buildgoggles](git://github.com/arobson/buildgoggles) or create a .droneTags.yml file.
@@ -46,18 +85,16 @@ publish:
 
 deploy:
   cowpoke:
-      image: leankit/drone-cowpoke:catalog
-      environment:
-        - DOCKER_LAUNCH_DEBUG=true
-      docker_username: mydockerhubname,
-      docker_password: mysecretpassword,
-      docker_repo: leankit/cowpoke-integration-test,
-      catalog_repo: BanditSoftware/rancher-cowpoke-integration-test,
-      github_token: mySecretToken,
-      github_user: myGithubName,
-      github_email: me@eample.com,
-      cowpoke_url: https://cowpoke.yourdomain.com,
-      rancher_catalog_name": cowpoke-integration-test
+    image: leankit/drone-cowpoke:logging
+    docker_username: $$DOCKER_USER
+    docker_password: $$DOCKER_PASS
+    docker_repo: your-docker-repository
+    catalog_repo: your-catalog-repository
+    github_token: $$GITHUB_TOKEN
+    github_user: $$GITHUB_USER
+    github_email: $$GITHUB_EMAIL
+    cowpoke_url: cowpoke-url
+    rancher_catalog_name: catalog-name-in-rancher
 ```
 
 ## Testing via script
