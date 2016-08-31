@@ -15,11 +15,11 @@ import (
 	"text/template"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/asaskevich/govalidator"
 	"github.com/blang/semver"
 	"github.com/drone/drone-plugin-go/plugin"
 	"github.com/heroku/docker-registry-client/registry"
+	yaml "gopkg.in/yaml.v2"
 )
 
 const (
@@ -83,6 +83,21 @@ type Tag struct {
 	Version string
 	Build   int
 	SHA     string
+}
+
+func checkForRepCreationRequestBuilder(repo string, branch string, number int, token string) *http.Request {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", repo, branch, number)
+	if !govalidator.IsURL(url) {
+		return nil
+	}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Print(err.Error())
+		return nil
+	}
+	request.SetBasicAuth(token, "x-oauth-basic")
+	request.Close = true
+	return request
 }
 
 func getTagsFromYaml(workspace plugin.Workspace) []string {
@@ -165,6 +180,7 @@ func main() {
 	tbb := catalog.TagsByBranch(tags)
 
 	var cowpokeRequests []*http.Request
+	var catalogCheckRequests []*http.Request
 
 	fmt.Println("Creating Catalog Templates for:")
 	for branch := range tbb.branches {
@@ -223,6 +239,7 @@ func main() {
 			}
 			if stringInSlice(last.Tag, upgradeTags) {
 				//count was already incremented so it needs to be decremented for the cowpoke request.
+				catalogCheckRequests = append(catalogCheckRequests, checkForRepCreationRequestBuilder(catalog.vargs.CatalogRepo, branch, count-1, catalog.vargs.GitHubToken))
 				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
 			}
 
@@ -245,21 +262,42 @@ func main() {
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-	for _, request := range cowpokeRequests {
-		response, err := client.Do(request)
-		if err != nil {
-			fmt.Println("error executing request:", response, err)
-			os.Exit(0)
-		}
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Println("error reading response:", err)
-		}
-		fmt.Println("response status code:", response.StatusCode)
-		fmt.Println("content:", string(contents))
-		response.Body.Close()
+	var goroutines [](chan bool)
+	for index, request := range cowpokeRequests {
+		done := make(chan bool, 1)
+		go doRequest(catalogCheckRequests[index], request, client, done)
+		goroutines = append(goroutines, done)
+	}
+	for _, routine := range goroutines {
+		<-routine
 	}
 	fmt.Println("... Finished drone-rancher-catalog")
+}
+
+func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, done chan<- bool) {
+	catalogIsThere := false
+	for !catalogIsThere && check != nil {
+		time.Sleep(50 * time.Millisecond)
+		response, err := client.Do(check)
+		if err != nil {
+			fmt.Printf(err.Error())
+			break
+		}
+		catalogIsThere = response.StatusCode != 404
+	}
+	response, err := client.Do(upgrade)
+	if err != nil {
+		fmt.Println("error executing request:", response, err)
+		os.Exit(0)
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("error reading response:", err)
+	}
+	fmt.Println("response status code:", response.StatusCode)
+	fmt.Println("content:", string(contents))
+	response.Body.Close()
+	done <- true
 }
 
 //calls cowpoke after catalog is built

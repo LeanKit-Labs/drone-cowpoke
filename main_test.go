@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"strconv"
 	"testing"
@@ -30,6 +31,21 @@ func TestHookImage(t *testing.T) {
 		})
 		g.It("should not find string", func() {
 			g.Assert(stringInSlice("findme", []string{"nope"})).Equal(false)
+		})
+	})
+
+	g.Describe("Make a request object to github to check for catalog existance", func() {
+		g.It("should return the correct request", func() {
+			catalogNo := 1
+			branchName := "test"
+			CatalogRepo := "owner/repo"
+			token := "secret"
+			req := checkForRepCreationRequestBuilder(CatalogRepo, branchName, catalogNo, token)
+			g.Assert(req.URL.String()).Equal(fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", CatalogRepo, branchName, catalogNo))
+			username, password, good := req.BasicAuth()
+			g.Assert(good).Equal(true)
+			g.Assert(username).Equal(token)
+			g.Assert(password).Equal("x-oauth-basic")
 		})
 	})
 
