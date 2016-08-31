@@ -222,7 +222,7 @@ func main() {
 				count++
 			}
 			if stringInSlice(last.Tag, upgradeTags) {
-				//count was already incremented so it needs to be decremented when added request
+				//count was already incremented so it needs to be decremented for the cowpoke request.
 				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
 			}
 
