@@ -57,10 +57,13 @@ func TestHookImage(t *testing.T) {
 			rancherCatalogName := "catalog"
 			token := "secret"
 			CowpokeURL := "cowpoke.mydomain.io"
+			BearerToken := "token"
 			var args map[string]interface{}
-			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL)
+			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL, BearerToken)
 			body, _ := ioutil.ReadAll(req.Body)
 			json.Unmarshal(body, &args)
+			g.Assert(req.Header.Get("bearer")).Equal(BearerToken)
+			g.Assert(req.Header.Get("Content-Type")).Equal("application/json")
 			g.Assert(args["catalog"].(string)).Equal(CatalogRepo)
 			g.Assert(args["rancherCatalogName"].(string)).Equal(rancherCatalogName)
 			g.Assert(args["githubToken"].(string)).Equal(token)

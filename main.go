@@ -52,6 +52,7 @@ type vargs struct {
 	GitHubEmail        string `json:"github_email"`
 	CowpokeURL         string `json:"cowpoke_url"`
 	RancherCatalogName string `json:"rancher_catalog_name"`
+	BearerToken        string `json:"bearer_token"`
 }
 
 // tagsByBranch struct
@@ -240,7 +241,7 @@ func main() {
 			if stringInSlice(last.Tag, upgradeTags) {
 				//count was already incremented so it needs to be decremented for the cowpoke request.
 				catalogCheckRequests = append(catalogCheckRequests, checkForRepCreationRequestBuilder(catalog.vargs.CatalogRepo, branch, count-1, catalog.vargs.GitHubToken))
-				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
+				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL, catalog.vargs.BearerToken))
 			}
 
 		}
@@ -301,10 +302,11 @@ func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, 
 }
 
 //calls cowpoke after catalog is built
-func cowpokeRequest(catalogNo int, branchName string, CatalogRepo string, rancherCatalogName string, token string, CowpokeURL string) *http.Request {
+func cowpokeRequest(catalogNo int, branchName string, CatalogRepo string, rancherCatalogName string, token string, CowpokeURL string, BearerToken string) *http.Request {
 	var jsonStr = []byte(fmt.Sprintf(`{"catalog":"%s","rancherCatalogName":"%s","githubToken":"%s","catalogVersion":"%s","branch":"%s"}`, CatalogRepo, rancherCatalogName, token, strconv.Itoa(catalogNo), branchName))
 	request, err := http.NewRequest("PATCH", CowpokeURL+"/api/stack", bytes.NewBuffer(jsonStr))
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("bearer", BearerToken)
 	if err != nil {
 		fmt.Println("Error making request object to cowpoke")
 		panic(err)
