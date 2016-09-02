@@ -40,7 +40,7 @@ func TestHookImage(t *testing.T) {
 			branchName := "test"
 			CatalogRepo := "owner/repo"
 			token := "secret"
-			req := checkForRepCreationRequestBuilder(CatalogRepo, branchName, catalogNo, token)
+			req := buildCatalogCreationCheckRequest(CatalogRepo, branchName, catalogNo, token)
 			g.Assert(req.URL.String()).Equal(fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", CatalogRepo, branchName, catalogNo))
 			username, password, good := req.BasicAuth()
 			g.Assert(good).Equal(true)

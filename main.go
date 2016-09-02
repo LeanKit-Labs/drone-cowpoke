@@ -86,7 +86,7 @@ type Tag struct {
 	SHA     string
 }
 
-func checkForRepCreationRequestBuilder(repo string, branch string, number int, token string) *http.Request {
+func buildCatalogCreationCheckRequest(repo string, branch string, number int, token string) *http.Request {
 	url := fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", repo, branch, number)
 	if !govalidator.IsURL(url) {
 		return nil
@@ -181,7 +181,7 @@ func main() {
 	tbb := catalog.TagsByBranch(tags)
 
 	var cowpokeRequests []*http.Request
-	var catalogCheckRequests []*http.Request
+	var catalogCreationCheckRequests []*http.Request
 
 	fmt.Println("Creating Catalog Templates for:")
 	for branch := range tbb.branches {
@@ -240,7 +240,9 @@ func main() {
 			}
 			if stringInSlice(last.Tag, upgradeTags) {
 				//count was already incremented so it needs to be decremented for the cowpoke request.
-				catalogCheckRequests = append(catalogCheckRequests, checkForRepCreationRequestBuilder(catalog.vargs.CatalogRepo, branch, count-1, catalog.vargs.GitHubToken))
+				//it is important for iteration that there be the same number of elements in both of these arrays
+				//Therefore even if buildCatalogCheckRequest returns nil we add it to the slice. The nil check happens doRequest
+				catalogCreationCheckRequests = append(catalogCreationCheckRequests, buildCatalogCreationCheckRequest(catalog.vargs.CatalogRepo, branch, count-1, catalog.vargs.GitHubToken))
 				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL, catalog.vargs.BearerToken))
 			}
 
@@ -266,7 +268,7 @@ func main() {
 	var goroutines [](chan bool)
 	for index, request := range cowpokeRequests {
 		done := make(chan bool, 1)
-		go doRequest(catalogCheckRequests[index], request, client, done)
+		go doRequest(catalogCreationCheckRequests[index], request, client, done)
 		goroutines = append(goroutines, done)
 	}
 	for _, routine := range goroutines {
