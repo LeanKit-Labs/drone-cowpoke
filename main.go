@@ -273,6 +273,7 @@ func main() {
 	}
 	for _, routine := range goroutines {
 		<-routine
+		close(routine)
 	}
 	fmt.Println("... Finished drone-rancher-catalog")
 }
