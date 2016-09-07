@@ -24,6 +24,7 @@
 			"github_email": "me@eample.com",
 			"cowpoke_url": "https://cowpoke.yourdomain.com",
 			"rancher_catalog_name": "cowpoke-integration-test"
+			"bearer_token": "token"
 		}
 	}
 	EOF

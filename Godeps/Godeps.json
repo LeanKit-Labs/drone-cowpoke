@@ -2,14 +2,16 @@
 	"ImportPath": "github.com/LeanKit-Labs/drone-cowpoke",
 	"GoVersion": "go1.6",
 	"GodepVersion": "v74",
-	"Packages": [
-		"./..."
-	],
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
 			"Comment": "v0.8.7",
 			"Rev": "418b41d23a1bf978c06faea5313ba194650ac088"
+		},
+		{
+			"ImportPath": "github.com/asaskevich/govalidator",
+			"Comment": "v4-12-g593d645",
+			"Rev": "593d64559f7600f29581a3ee42177f5dbded27a9"
 		},
 		{
 			"ImportPath": "github.com/blang/semver",
@@ -47,6 +49,10 @@
 		{
 			"ImportPath": "github.com/heroku/docker-registry-client/registry",
 			"Rev": "ddbd05bac47f55e533a7ed124211ef7e076b0bf3"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "a83829b6f1293c91addabc89d0571c246397bbf4"
 		}
 	]
 }

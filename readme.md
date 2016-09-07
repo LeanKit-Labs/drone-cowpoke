@@ -95,6 +95,7 @@ deploy:
     github_email: $$GITHUB_EMAIL
     cowpoke_url: cowpoke-url
     rancher_catalog_name: catalog-name-in-rancher
+    bearer_token: the-cowpoke-api-key
 ```
 
 ## Testing via script

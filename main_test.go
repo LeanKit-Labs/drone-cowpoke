@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"strconv"
 	"testing"
@@ -33,6 +34,21 @@ func TestHookImage(t *testing.T) {
 		})
 	})
 
+	g.Describe("Make a request object to github to check for catalog existance", func() {
+		g.It("should return the correct request", func() {
+			catalogNo := 1
+			branchName := "test"
+			CatalogRepo := "owner/repo"
+			token := "secret"
+			req := buildCatalogCreationCheckRequest(CatalogRepo, branchName, catalogNo, token)
+			g.Assert(req.URL.String()).Equal(fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", CatalogRepo, branchName, catalogNo))
+			username, password, good := req.BasicAuth()
+			g.Assert(good).Equal(true)
+			g.Assert(username).Equal(token)
+			g.Assert(password).Equal("x-oauth-basic")
+		})
+	})
+
 	g.Describe("Make a request object for a request to cowpoke", func() {
 		g.It("should return the correct request", func() {
 			catalogNo := 1
@@ -41,10 +57,13 @@ func TestHookImage(t *testing.T) {
 			rancherCatalogName := "catalog"
 			token := "secret"
 			CowpokeURL := "cowpoke.mydomain.io"
+			BearerToken := "token"
 			var args map[string]interface{}
-			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL)
+			req := cowpokeRequest(catalogNo, branchName, CatalogRepo, rancherCatalogName, token, CowpokeURL, BearerToken)
 			body, _ := ioutil.ReadAll(req.Body)
 			json.Unmarshal(body, &args)
+			g.Assert(req.Header.Get("bearer")).Equal(BearerToken)
+			g.Assert(req.Header.Get("Content-Type")).Equal("application/json")
 			g.Assert(args["catalog"].(string)).Equal(CatalogRepo)
 			g.Assert(args["rancherCatalogName"].(string)).Equal(rancherCatalogName)
 			g.Assert(args["githubToken"].(string)).Equal(token)
