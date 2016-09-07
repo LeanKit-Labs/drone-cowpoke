@@ -265,20 +265,13 @@ func main() {
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-	var goroutines [](chan bool)
 	for index, request := range cowpokeRequests {
-		done := make(chan bool, 1)
-		go doRequest(catalogCreationCheckRequests[index], request, client, done)
-		goroutines = append(goroutines, done)
-	}
-	for _, routine := range goroutines {
-		<-routine
-		close(routine)
+		doRequest(catalogCreationCheckRequests[index], request, client)
 	}
 	fmt.Println("... Finished drone-rancher-catalog")
 }
 
-func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, done chan<- bool) {
+func doRequest(check *http.Request, upgrade *http.Request, client *http.Client) {
 	catalogIsThere := false
 	for !catalogIsThere && check != nil {
 		time.Sleep(50 * time.Millisecond)
@@ -292,7 +285,6 @@ func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, 
 	response, err := client.Do(upgrade)
 	if err != nil {
 		fmt.Println("error executing request:", response, err)
-		done <- false
 		return
 	}
 	contents, err := ioutil.ReadAll(response.Body)
@@ -302,7 +294,6 @@ func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, 
 	fmt.Println("response status code:", response.StatusCode)
 	fmt.Println("content:", string(contents))
 	response.Body.Close()
-	done <- true
 }
 
 //calls cowpoke after catalog is built
