@@ -292,7 +292,8 @@ func doRequest(check *http.Request, upgrade *http.Request, client *http.Client, 
 	response, err := client.Do(upgrade)
 	if err != nil {
 		fmt.Println("error executing request:", response, err)
-		os.Exit(0)
+		done <- false
+		return
 	}
 	contents, err := ioutil.ReadAll(response.Body)
 	if err != nil {
