@@ -15,11 +15,11 @@ import (
 	"text/template"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/asaskevich/govalidator"
 	"github.com/blang/semver"
 	"github.com/drone/drone-plugin-go/plugin"
 	"github.com/heroku/docker-registry-client/registry"
+	yaml "gopkg.in/yaml.v2"
 )
 
 const (
@@ -52,6 +52,7 @@ type vargs struct {
 	GitHubEmail        string `json:"github_email"`
 	CowpokeURL         string `json:"cowpoke_url"`
 	RancherCatalogName string `json:"rancher_catalog_name"`
+	BearerToken        string `json:"bearer_token"`
 }
 
 // tagsByBranch struct
@@ -83,6 +84,21 @@ type Tag struct {
 	Version string
 	Build   int
 	SHA     string
+}
+
+func buildCatalogCreationCheckRequest(repo string, branch string, number int, token string) *http.Request {
+	url := fmt.Sprintf("https://api.github.com/repos/%s/contents/templates/%s/%d", repo, branch, number)
+	if !govalidator.IsURL(url) {
+		return nil
+	}
+	request, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Print(err.Error())
+		return nil
+	}
+	request.SetBasicAuth(token, "x-oauth-basic")
+	request.Close = true
+	return request
 }
 
 func getTagsFromYaml(workspace plugin.Workspace) []string {
@@ -165,6 +181,7 @@ func main() {
 	tbb := catalog.TagsByBranch(tags)
 
 	var cowpokeRequests []*http.Request
+	var catalogCreationCheckRequests []*http.Request
 
 	fmt.Println("Creating Catalog Templates for:")
 	for branch := range tbb.branches {
@@ -223,7 +240,10 @@ func main() {
 			}
 			if stringInSlice(last.Tag, upgradeTags) {
 				//count was already incremented so it needs to be decremented for the cowpoke request.
-				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL))
+				//it is important for iteration that there be the same number of elements in both of these arrays
+				//Therefore even if buildCatalogCheckRequest returns nil we add it to the slice. The nil check happens doRequest
+				catalogCreationCheckRequests = append(catalogCreationCheckRequests, buildCatalogCreationCheckRequest(catalog.vargs.CatalogRepo, branch, count-1, catalog.vargs.GitHubToken))
+				cowpokeRequests = append(cowpokeRequests, cowpokeRequest(count-1, branch, catalog.vargs.CatalogRepo, catalog.vargs.RancherCatalogName, catalog.vargs.GitHubToken, catalog.vargs.CowpokeURL, catalog.vargs.BearerToken))
 			}
 
 		}
@@ -245,28 +265,43 @@ func main() {
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
-	for _, request := range cowpokeRequests {
-		response, err := client.Do(request)
-		if err != nil {
-			fmt.Println("error executing request:", response, err)
-			os.Exit(0)
-		}
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Println("error reading response:", err)
-		}
-		fmt.Println("response status code:", response.StatusCode)
-		fmt.Println("content:", string(contents))
-		response.Body.Close()
+	for index, request := range cowpokeRequests {
+		doRequest(catalogCreationCheckRequests[index], request, client)
 	}
 	fmt.Println("... Finished drone-rancher-catalog")
 }
 
+func doRequest(check *http.Request, upgrade *http.Request, client *http.Client) {
+	catalogIsThere := false
+	for !catalogIsThere && check != nil {
+		time.Sleep(50 * time.Millisecond)
+		response, err := client.Do(check)
+		if err != nil {
+			fmt.Printf(err.Error())
+			break
+		}
+		catalogIsThere = response.StatusCode != 404
+	}
+	response, err := client.Do(upgrade)
+	if err != nil {
+		fmt.Println("error executing request:", response, err)
+		return
+	}
+	contents, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("error reading response:", err)
+	}
+	fmt.Println("response status code:", response.StatusCode)
+	fmt.Println("content:", string(contents))
+	response.Body.Close()
+}
+
 //calls cowpoke after catalog is built
-func cowpokeRequest(catalogNo int, branchName string, CatalogRepo string, rancherCatalogName string, token string, CowpokeURL string) *http.Request {
+func cowpokeRequest(catalogNo int, branchName string, CatalogRepo string, rancherCatalogName string, token string, CowpokeURL string, BearerToken string) *http.Request {
 	var jsonStr = []byte(fmt.Sprintf(`{"catalog":"%s","rancherCatalogName":"%s","githubToken":"%s","catalogVersion":"%s","branch":"%s"}`, CatalogRepo, rancherCatalogName, token, strconv.Itoa(catalogNo), branchName))
 	request, err := http.NewRequest("PATCH", CowpokeURL+"/api/stack", bytes.NewBuffer(jsonStr))
 	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("bearer", BearerToken)
 	if err != nil {
 		fmt.Println("Error making request object to cowpoke")
 		panic(err)
