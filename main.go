@@ -265,6 +265,7 @@ func main() {
 	client := &http.Client{
 		Timeout: time.Second * 60,
 	}
+	time.Sleep(3000 * time.Millisecond) //give github time to be consisitent
 	for index, request := range cowpokeRequests {
 		doRequest(catalogCreationCheckRequests[index], request, client)
 	}
