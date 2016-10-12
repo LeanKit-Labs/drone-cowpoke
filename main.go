@@ -430,7 +430,12 @@ func (c *catalog) commitCatalogRepo() {
 	err := cmd.Run()
 	if err != nil {
 		fmt.Printf("ERROR: Failed to git commit %v\n", err)
-		os.Exit(1)
+		fmt.Printf("This can happen because: ")
+		fmt.Printf("\tA) There is a concurrent build on this project that already built the catalog and upgraded the stack.")
+		fmt.Printf("\tB) There was network issue, and restarting the build should work")
+		fmt.Printf("\tC) The Github user may not have write access to the catalog repo")
+		fmt.Printf("\tD) If none of those apply, then you may have found a bug in this plugin and should file an issue with us here at leankit")
+		os.Exit(0)
 	}
 }
 
