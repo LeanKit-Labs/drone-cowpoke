@@ -1,0 +1,72 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/sirupsen/logrus",
+			"revision": "418b41d23a1bf978c06faea5313ba194650ac088",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/asaskevich/govalidator",
+			"repository": "https://github.com/asaskevich/govalidator",
+			"revision": "593d64559f7600f29581a3ee42177f5dbded27a9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/blang/semver",
+			"repository": "https://github.com/blang/semver",
+			"revision": "60ec3488bfea7cca02b021d106d9911120d25fe9",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"revision": "346938d642f2ec3594ed81d874461961cd0faa76",
+			"branch": "master",
+			"path": "/spew"
+		},
+		{
+			"importpath": "github.com/docker/distribution/digest",
+			"repository": "https://github.com/docker/distribution/digest",
+			"revision": "9ca7921603852314b18a6ecc19f91806935f34bd",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/docker/docker/pkg/tarsum",
+			"repository": "https://github.com/docker/docker/pkg/tarsum",
+			"revision": "59311faaed4e3384fc8da738a57a25f17ae07e05",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/docker/libtrust",
+			"repository": "https://github.com/docker/libtrust",
+			"revision": "9cbd2a1374f46905c68a4eb3694a130610adc62a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/drone/drone-plugin-go/plugin",
+			"repository": "https://github.com/drone/drone-plugin-go/plugin",
+			"revision": "d6109f644c5935c22620081b4c234bb2263743c7",
+			"branch": ""
+		},
+		{
+			"importpath": "github.com/franela/goblin",
+			"repository": "https://github.com/franela/goblin",
+			"revision": "efa9910a3ea4ccb7ee4b977571318af2e51ba05f",
+			"branch": ""
+		},
+		{
+			"importpath": "github.com/heroku/docker-registry-client/registry",
+			"repository": "https://github.com/franela/goblin",
+			"revision": "ddbd05bac47f55e533a7ed124211ef7e076b0bf3",
+			"branch": ""
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"branch": "v2"
+		}
+	]
+}

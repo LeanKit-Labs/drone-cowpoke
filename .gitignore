@@ -3,4 +3,8 @@ drone-cowpoke
 docker/.
 drone-cowpoke
 npm-debug.log
-vendor/
+.droneTags.yml
+scripts/*-local.sh
+.DS_Store
+pkg/
+bin/
