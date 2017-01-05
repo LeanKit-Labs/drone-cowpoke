@@ -1,7 +1,5 @@
-drone-cowpoke
 .vscode
 docker/.
-drone-cowpoke
 npm-debug.log
 .droneTags.yml
 scripts/*-local.sh
