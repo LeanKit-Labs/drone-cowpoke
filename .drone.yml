@@ -1,14 +1,12 @@
 build:
-  image: golang:1.5
+  image: golang:1.7.4
   environment:
-    - GO15VENDOREXPERIMENT=1
     - GOOS=linux
     - GOARCH=amd64
     - CGO_ENABLED=
     - GOPATH=
   commands:
     - go get -v github.com/tools/godep
-    - go get gopkg.in/yaml.v2
     - godep restore
     - go test
     - go build -a -tags netgo

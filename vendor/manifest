@@ -1,0 +1,68 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/Sirupsen/logrus",
+			"repository": "https://github.com/Sirupsen/logrus",
+			"revision": "881bee4e20a5d11a6a88a5667c6f292072ac1963",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/asaskevich/govalidator",
+			"repository": "https://github.com/asaskevich/govalidator",
+			"revision": "fdf19785fd3558d619ef81212f5edf1d6c2a5911",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/blang/semver",
+			"repository": "https://github.com/blang/semver",
+			"revision": "3a37c301dda64cbe17f16f661b4c976803c0e2d2",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/docker/distribution",
+			"repository": "https://github.com/docker/distribution",
+			"revision": "76f514b618dc815f0dcf56f52988e7f2fa735f7a",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/docker/libtrust",
+			"repository": "https://github.com/docker/libtrust",
+			"revision": "aabc10ec26b754e797f9028f4589c5b7bd90dc20",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/drone/drone-plugin-go/plugin",
+			"repository": "https://github.com/drone/drone-plugin-go",
+			"revision": "d6109f644c5935c22620081b4c234bb2263743c7",
+			"branch": "HEAD",
+			"path": "/plugin"
+		},
+		{
+			"importpath": "github.com/gorilla/mux",
+			"repository": "https://github.com/gorilla/mux",
+			"revision": "757bef944d0f21880861c2dd9c871ca543023cba",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/heroku/docker-registry-client/registry",
+			"repository": "https://github.com/heroku/docker-registry-client",
+			"revision": "36bd5f538a6b9e70f2d863c9a8f6bf955a98eddc",
+			"branch": "master",
+			"path": "/registry"
+		},
+		{
+			"importpath": "golang.org/x/net/context",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "67957fd0b1868d2b9f4fd2b3a3474c83bc3d49c3",
+			"branch": "master",
+			"path": "/context"
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"revision": "a5b47d31c556af34a302ce5d659e6fea44d90de0",
+			"branch": "v2"
+		}
+	]
+}
